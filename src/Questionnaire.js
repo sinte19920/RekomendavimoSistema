@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+
 const SECTIONS = [
     { key: 'savimonė', label: 'Savimonė', ids: [1] },
     { key: 'savivaldymas', label: 'Savivaldymas', ids: [2, 3, 4, 5] },
@@ -16,9 +18,6 @@ function Questionnaire({ onSubmit, onBack }) {
     const [submitting, setSubmitting] = useState(false);
     const [currentSection, setCurrentSection] = useState(0);
     const [error, setError] = useState(null);
-
-
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
     useEffect(() => {
         fetch(`${API_BASE_URL}/api/questions`)
