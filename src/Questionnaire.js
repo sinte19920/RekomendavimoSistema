@@ -17,8 +17,11 @@ function Questionnaire({ onSubmit, onBack }) {
     const [currentSection, setCurrentSection] = useState(0);
     const [error, setError] = useState(null);
 
+
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+
     useEffect(() => {
-        fetch('http://localhost:5001/api/questions')
+        fetch(`${API_BASE_URL}/api/questions`)
             .then(r => r.json())
             .then(data => {
                 setQuestions(data);
@@ -44,7 +47,7 @@ function Questionnaire({ onSubmit, onBack }) {
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
-            const response = await fetch('http://localhost:5001/api/recommend', {
+            const response = await fetch(`${API_BASE_URL}/api/recommend`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ answers })
