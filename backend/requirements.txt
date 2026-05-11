@@ -1,0 +1,8 @@
+Flask
+flask-cors
+gunicorn
+numpy
+scikit-learn
+psycopg2-binary
+groq
+python-dotenv
