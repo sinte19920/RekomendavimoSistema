@@ -33,16 +33,9 @@ def get_db():
     return psycopg2.connect(DATABASE_URL)
 
 def init_db():
-    """
-    Sukuria visas 7 lenteles pagal ataskaitos duomenų modelį
-    ir užpildo fixed duomenis (kompetencijas, klausimus, programas, svorius).
-    Iškviečiama tik kartą paleidžiant serverį.
-    """
     conn = get_db()
     cur = conn.cursor()
 
-    # ─ 1. VARTOTOJAS ─
-    # Saugo vartotojo sesijos informaciją
     cur.execute("""
         CREATE TABLE IF NOT EXISTS vartotojas (
             id            SERIAL PRIMARY KEY,
@@ -52,44 +45,36 @@ def init_db():
         );
     """)
 
-    # ─ 2. KOMPETENCIJA ─
-    # 12 EI kompetencijų + 5 Big Five bruožai
     cur.execute("""
         CREATE TABLE IF NOT EXISTS kompetencija (
             id          SERIAL PRIMARY KEY,
             pavadinimas VARCHAR(100) UNIQUE NOT NULL,
-            kategorija  VARCHAR(20) NOT NULL,  -- 'EI' arba 'BigFive'
+            kategorija  VARCHAR(20) NOT NULL,
             aprasymas   TEXT
         );
     """)
 
-    # ─ 3. KLAUSIMAS ─
-    # Klausimyno struktūra — tekstas, tipas, ryšys su kompetencija
     cur.execute("""
         CREATE TABLE IF NOT EXISTS klausimas (
             id              SERIAL PRIMARY KEY,
             tekstas         TEXT NOT NULL,
-            tipas           VARCHAR(10) NOT NULL,  -- 'scale' arba 'open'
+            tipas           VARCHAR(10) NOT NULL,
             eile            INTEGER UNIQUE NOT NULL,
             kompetencija_id INTEGER REFERENCES kompetencija(id)
         );
     """)
 
-    # ─ 4. ATSAKYMAS -
-    # Jungia vartotoją su klausimais, saugo įvertinimą ir NLP rezultatą
     cur.execute("""
         CREATE TABLE IF NOT EXISTS atsakymas (
             id              SERIAL PRIMARY KEY,
             vartotojo_id    INTEGER REFERENCES vartotojas(id) ON DELETE CASCADE,
             klausimo_id     INTEGER REFERENCES klausimas(id),
-            reiksme         INTEGER,               -- skalės atsakymui (1–5)
-            tekstas         TEXT,                  -- atviro klausimo tekstui
-            nlp_rezultatas  JSON                   -- Groq grąžinti kompetencijų įverčiai
+            reiksme         INTEGER,
+            tekstas         TEXT,
+            nlp_rezultatas  JSON
         );
     """)
 
-    # - 5. PROGRAMA -
-    # 10 VU MIF bakalauro programų
     cur.execute("""
         CREATE TABLE IF NOT EXISTS programa (
             id          SERIAL PRIMARY KEY,
@@ -99,32 +84,27 @@ def init_db():
         );
     """)
 
-    # - 6. PROGRAMOS_KOMPETENCIJA -
-    # M:N ryšys — svoriai iš ekspertinio vertinimo (0–3 skalė)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS programos_kompetencija (
             programa_id     INTEGER REFERENCES programa(id),
             kompetencija_id INTEGER REFERENCES kompetencija(id),
-            svoris          DECIMAL(4,2) NOT NULL,  -- 0.00–3.00
+            svoris          DECIMAL(4,2) NOT NULL,
             PRIMARY KEY (programa_id, kompetencija_id)
         );
     """)
 
-    # ─ REZULTATAI -
-    # Papildoma lentelė saugoti rekomendacijų istorijai
     cur.execute("""
         CREATE TABLE IF NOT EXISTS rezultatas (
             id           SERIAL PRIMARY KEY,
             vartotojo_id INTEGER REFERENCES vartotojas(id) ON DELETE CASCADE,
-            vieta        INTEGER NOT NULL,   -- 1, 2 arba 3
+            vieta        INTEGER NOT NULL,
             programa_id  INTEGER REFERENCES programa(id),
-            balas        DECIMAL(5,2) NOT NULL  -- 0.00–100.00
+            balas        DECIMAL(5,2) NOT NULL
         );
     """)
 
     conn.commit()
 
-    # - Užpildyti fiksuotus duomenis -
     _seed_kompetencijos(cur, conn)
     _seed_klausimai(cur, conn)
     _seed_programos(cur, conn)
@@ -140,29 +120,23 @@ def init_db():
 # ════════════════════════════════════════
 
 def _seed_kompetencijos(cur, conn):
-    """12 EI kompetencijų + 5 Big Five — įkeliama tik jei lentelė tuščia."""
     cur.execute("SELECT COUNT(*) FROM kompetencija")
     if cur.fetchone()[0] > 0:
         return
 
     kompetencijos = [
-        # EI — Savimonė
-        ("Emocinė savimonė",        "EI", "Gebėjimas atpažinti savo emocijas ir suprasti jų įtaką"),
-        # EI — Savivaldymas
-        ("Emocinė savikontrolė",    "EI", "Gebėjimas valdyti impulsyvias emocijas ir elgesį"),
-        ("Adaptyvumas",              "EI", "Lankstumas prisitaikant prie besikeičiančių situacijų"),
-        ("Orientacija į pasiekimus", "EI", "Siekis tobulėti ir pasiekti aukštų standartų"),
-        ("Pozityvus požiūris",       "EI", "Gebėjimas matyti teigiamus aspektus situacijose"),
-        # EI — Socialinis sąmoningumas
-        ("Empatija",                 "EI", "Gebėjimas suprasti kitų žmonių emocijas ir perspektyvą"),
-        ("Organizacinis sąmoningumas","EI","Gebėjimas suprasti grupės dinamiką ir neformalius ryšius"),
-        # EI — Santykių valdymas
-        ("Įtaka",                    "EI", "Gebėjimas daryti teigiamą įtaką ir įtikinti kitus"),
-        ("Mentorystė ir ugdymas",    "EI", "Gebėjimas ugdyti kitų gebėjimus ir dalintis žiniomis"),
-        ("Konfliktų valdymas",       "EI", "Gebėjimas konstruktyviai spręsti nesutarimus"),
-        ("Komandinis darbas",        "EI", "Gebėjimas efektyviai bendradarbiauti siekiant bendro tikslo"),
-        ("Įkvepianti lyderystė",     "EI", "Gebėjimas įkvėpti ir motyvuoti kitus"),
-        # Big Five
+        ("Emocinė savimonė",         "EI",      "Gebėjimas atpažinti savo emocijas ir suprasti jų įtaką"),
+        ("Emocinė savikontrolė",     "EI",      "Gebėjimas valdyti impulsyvias emocijas ir elgesį"),
+        ("Adaptyvumas",              "EI",      "Lankstumas prisitaikant prie besikeičiančių situacijų"),
+        ("Orientacija į pasiekimus", "EI",      "Siekis tobulėti ir pasiekti aukštų standartų"),
+        ("Pozityvus požiūris",       "EI",      "Gebėjimas matyti teigiamus aspektus situacijose"),
+        ("Empatija",                 "EI",      "Gebėjimas suprasti kitų žmonių emocijas ir perspektyvą"),
+        ("Organizacinis sąmoningumas","EI",     "Gebėjimas suprasti grupės dinamiką ir neformalius ryšius"),
+        ("Įtaka",                    "EI",      "Gebėjimas daryti teigiamą įtaką ir įtikinti kitus"),
+        ("Mentorystė ir ugdymas",    "EI",      "Gebėjimas ugdyti kitų gebėjimus ir dalintis žiniomis"),
+        ("Konfliktų valdymas",       "EI",      "Gebėjimas konstruktyviai spręsti nesutarimus"),
+        ("Komandinis darbas",        "EI",      "Gebėjimas efektyviai bendradarbiauti siekiant bendro tikslo"),
+        ("Įkvepianti lyderystė",     "EI",      "Gebėjimas įkvėpti ir motyvuoti kitus"),
         ("Atvirumas patirčiai",      "BigFive", "Smalsumas, kūrybiškumas, polinkis į naujoves"),
         ("Sąmoningumas",             "BigFive", "Organizuotumas, kruopštumas, atsakingumas"),
         ("Ekstraversija",            "BigFive", "Komunikabilumas, energingumas, socialumas"),
@@ -180,37 +154,35 @@ def _seed_kompetencijos(cur, conn):
 
 
 def _seed_klausimai(cur, conn):
-    """21 klausimai — įkeliama tik jei lentelė tuščia."""
     cur.execute("SELECT COUNT(*) FROM klausimas")
     if cur.fetchone()[0] > 0:
         return
 
-    # Gauti kompetencijų ID pagal pavadinimą
     cur.execute("SELECT id, pavadinimas FROM kompetencija")
     komp_map = {row[1]: row[0] for row in cur.fetchall()}
 
     klausimai = [
-        (1,  "Lengvai atpažįstu savo emocijas kasdienėse situacijose.",             "scale", "Emocinė savimonė"),
-        (2,  "Sugebu suvaldyti pyktį ar nerimą stresinėse situacijose.",            "scale", "Emocinė savikontrolė"),
-        (3,  "Man nesunku prisitaikyti prie netikėtų pokyčių.",                     "scale", "Adaptyvumas"),
-        (4,  "Siekiu tobulėti ir kelti sau aukštus standartus.",                    "scale", "Orientacija į pasiekimus"),
-        (5,  "Dažniausiai situacijas vertinu teigiamai.",                           "scale", "Pozityvus požiūris"),
-        (6,  "Gerai suprantu kitų žmonių jausmus ir perspektyvą.",                  "scale", "Empatija"),
-        (7,  "Jaučiu grupės dinamiką ir neformalius santykius komandoje.",          "scale", "Organizacinis sąmoningumas"),
-        (8,  "Man sekasi įtikinti kitus ir gauti jų palaikymą.",                    "scale", "Įtaka"),
-        (9, "Mėgstu padėti kitiems mokytis ir tobulėti.",                          "scale", "Mentorystė ir ugdymas"),
-        (10, "Sugebu rasti kompromisą konfliktinėse situacijose.",                  "scale", "Konfliktų valdymas"),
-        (11, "Efektyviai dirbu komandoje siekdamas bendro tikslo.",                 "scale", "Komandinis darbas"),
-        (12, "Man patinka eksperimentuoti su naujomis idėjomis.",                   "scale", "Atvirumas patirčiai"),
-        (13, "Esu organizuotas ir kruopštus savo darbe.",                           "scale", "Sąmoningumas"),
-        (14, "Mėgstu bendrauti ir esu energingas su žmonėmis.",                     "scale", "Ekstraversija"),
-        (15, "Man svarbu bendradarbiauti ir išlaikyti gerus santykius.",            "scale", "Sutariamumas"),
-        (16, "Dažnai jaučiu nerimą ar stresą.",                                    "scale", "Emocinis stabilumas"),
-        (17, "Man patinka įkvėpti kitus ir rodyti pavyzdį siekiant bendro tikslo.", "scale", "Įkvepianti lyderystė"),
+        (1,  "Lengvai atpažįstu savo emocijas kasdienėse situacijose.",              "scale", "Emocinė savimonė"),
+        (2,  "Sugebu suvaldyti pyktį ar nerimą stresinėse situacijose.",             "scale", "Emocinė savikontrolė"),
+        (3,  "Man nesunku prisitaikyti prie netikėtų pokyčių.",                      "scale", "Adaptyvumas"),
+        (4,  "Siekiu tobulėti ir kelti sau aukštus standartus.",                     "scale", "Orientacija į pasiekimus"),
+        (5,  "Dažniausiai situacijas vertinu teigiamai.",                            "scale", "Pozityvus požiūris"),
+        (6,  "Gerai suprantu kitų žmonių jausmus ir perspektyvą.",                   "scale", "Empatija"),
+        (7,  "Jaučiu grupės dinamiką ir neformalius santykius komandoje.",           "scale", "Organizacinis sąmoningumas"),
+        (8,  "Man sekasi įtikinti kitus ir gauti jų palaikymą.",                     "scale", "Įtaka"),
+        (9,  "Mėgstu padėti kitiems mokytis ir tobulėti.",                           "scale", "Mentorystė ir ugdymas"),
+        (10, "Sugebu rasti kompromisą konfliktinėse situacijose.",                   "scale", "Konfliktų valdymas"),
+        (11, "Efektyviai dirbu komandoje siekdamas bendro tikslo.",                  "scale", "Komandinis darbas"),
+        (12, "Man patinka eksperimentuoti su naujomis idėjomis.",                    "scale", "Atvirumas patirčiai"),
+        (13, "Esu organizuotas ir kruopštus savo darbe.",                            "scale", "Sąmoningumas"),
+        (14, "Mėgstu bendrauti ir esu energingas su žmonėmis.",                      "scale", "Ekstraversija"),
+        (15, "Man svarbu bendradarbiauti ir išlaikyti gerus santykius.",             "scale", "Sutariamumas"),
+        (16, "Dažnai jaučiu nerimą ar stresą.",                                     "scale", "Emocinis stabilumas"),
+        (17, "Man patinka įkvėpti kitus ir rodyti pavyzdį siekiant bendro tikslo.",  "scale", "Įkvepianti lyderystė"),
         (18, "Prisimink situaciją, kai susidūrei su sunkumu ar nesėkme (pvz. mokykloje, sporte, draugystėje). Kaip jauteisi ir ką padarei?", "open", None),
-        (19, "Papasakok apie situaciją, kai dirbai ar mokeisi kartu su kitais žmonėmis. Kas tau toje patirtyje patiko ar nepatiko?", "open", None),
+        (19, "Papasakok apie situaciją, kai dirbai ar mokeisi kartu su kitais žmonėmis. Kas tau toje patirtyje patiko ar nepatiko?",        "open", None),
         (20, "Kas tau suteikia daugiausiai energijos — kai dirbi vienas ir giliniesi į temą, ar kai bendrauti ir veiki su žmonėmis? Kodėl?", "open", None),
-        (21, "Ar esi kada nors padėjęs kitam žmogui išmokti ką nors naujo arba spręsti problemą? Kaip tai vyko ir kaip jauteisi?", "open", None),
+        (21, "Ar esi kada nors padėjęs kitam žmogui išmokti ką nors naujo arba spręsti problemą? Kaip tai vyko ir kaip jauteisi?",          "open", None),
     ]
 
     for eile, tekstas, tipas, komp_pav in klausimai:
@@ -224,7 +196,6 @@ def _seed_klausimai(cur, conn):
 
 
 def _seed_programos(cur, conn):
-    """8 VU MIF programos — įkeliama tik jei lentelė tuščia."""
     cur.execute("SELECT COUNT(*) FROM programa")
     if cur.fetchone()[0] > 0:
         return
@@ -250,10 +221,6 @@ def _seed_programos(cur, conn):
 
 
 def _seed_svoriai(cur, conn):
-    """
-    Svorių matrica iš ekspertinio vertinimo (3.2a, 3.2b, 3.3 lentelės).
-    Įkeliama tik jei lentelė tuščia.
-    """
     cur.execute("SELECT COUNT(*) FROM programos_kompetencija")
     if cur.fetchone()[0] > 0:
         return
@@ -264,8 +231,6 @@ def _seed_svoriai(cur, conn):
     cur.execute("SELECT id, pavadinimas FROM kompetencija ORDER BY id")
     komp_map = {row[1]: row[0] for row in cur.fetchall()}
 
-    # Tvarka kompetencijų (atitinka PROGRAMS):
-    # EmSav, EmSavK, Adapt, OrP, PozP, Emp, OrgS, Įtaka, Ment, KonflV, KomD, ĮkvL, Atv, Są, Ekst, Sut, EmStab
     komp_eile = [
         "Emocinė savimonė", "Emocinė savikontrolė", "Adaptyvumas",
         "Orientacija į pasiekimus", "Pozityvus požiūris", "Empatija",
@@ -275,7 +240,6 @@ def _seed_svoriai(cur, conn):
         "Sutariamumas", "Emocinis stabilumas"
     ]
 
-    # Svoriai iš vykdytos apklausos
     svoriai = {
         "Bioinformatika":                  [2.33, 2.00, 2.33, 3.00, 2.67, 2.33, 2.00, 2.00, 2.00, 2.00, 2.67, 2.33, 2.67, 3.00, 1.67, 2.33, 2.33],
         "Duomenų mokslas":                 [2.00, 3.00, 2.67, 2.67, 2.67, 2.00, 2.33, 2.00, 1.67, 2.33, 3.00, 2.33, 2.33, 2.67, 1.67, 1.33, 2.00],
@@ -310,7 +274,6 @@ def _seed_svoriai(cur, conn):
 # ════════════════════════════════════════
 
 def gauti_klausimai_is_db():
-    """Nuskaito klausimus iš DB (su kompetencijos pavadinimu)."""
     conn = get_db()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
@@ -327,11 +290,6 @@ def gauti_klausimai_is_db():
 
 
 def gauti_svoriai_is_db():
-    """
-    Nuskaito svorių matricą iš DB.
-    Grąžina: { programa_pavadinimas: [svoris1, svoris2, ...] }
-    Tvarka atitinka kompetencijų eilę pagal kompetencija.id
-    """
     conn = get_db()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
@@ -358,23 +316,19 @@ def gauti_svoriai_is_db():
 
 def issaugoti_sesija(sesijos_id: str, answers: dict,
                      top3: list, nlp_scores: dict):
-    """Išsaugo visą sesiją į DB pagal 7 lenteles."""
     try:
         conn = get_db()
         cur = conn.cursor()
 
-        # 1. VARTOTOJAS
         cur.execute("""
             INSERT INTO vartotojas (sesijos_id, baigtas)
             VALUES (%s, TRUE) RETURNING id
         """, (sesijos_id,))
         vartotojo_id = cur.fetchone()[0]
 
-        # 2. Gauti klausimų ID iš DB
         cur.execute("SELECT id, eile, tipas FROM klausimas ORDER BY eile")
         klausimai_db = {row[1]: (row[0], row[2]) for row in cur.fetchall()}
 
-        # 3. ATSAKYMAI
         nlp_json = json.dumps(nlp_scores) if nlp_scores else None
 
         for eile, (kl_id, tipas) in klausimai_db.items():
@@ -389,7 +343,6 @@ def issaugoti_sesija(sesijos_id: str, answers: dict,
                     VALUES (%s, %s, %s, %s)
                 """, (vartotojo_id, kl_id, int(float(reiksme)), None))
             else:
-                # Atviram klausimui — NLP rezultatas pridedamas prie paskutinio
                 cur.execute("""
                     INSERT INTO atsakymas
                         (vartotojo_id, klausimo_id, tekstas, nlp_rezultatas)
@@ -397,7 +350,6 @@ def issaugoti_sesija(sesijos_id: str, answers: dict,
                 """, (vartotojo_id, kl_id, str(reiksme),
                       nlp_json if eile == 21 else None))
 
-        # 4. REZULTATAI
         cur.execute("SELECT id, pavadinimas FROM programa")
         prog_map = {row[1]: row[0] for row in cur.fetchall()}
 
@@ -526,14 +478,12 @@ Atsakyk TIK JSON formatu, be jokio papildomo teksto:
 
 @app.route('/api/questions', methods=['GET'])
 def get_questions():
-    """Grąžina klausimus iš DB (ne iš kodo)."""
     klausimai = gauti_klausimai_is_db()
-    # Formatuojame kaip anksčiau kad frontend veiktų be pakeitimų
     return jsonify([{
-        "id":          k["eile"],
-        "text":        k["tekstas"],
-        "competency":  k["kompetencija"],
-        "type":        k["tipas"]
+        "id":         k["eile"],
+        "text":       k["tekstas"],
+        "competency": k["kompetencija"],
+        "type":       k["tipas"]
     } for k in klausimai])
 
 
@@ -543,23 +493,19 @@ def recommend():
     data = request.json
     answers = data.get('answers', {})
 
-    # 1. Svoriai iš DB
     programs = gauti_svoriai_is_db()
 
-    # 2. Skalės atsakymai → profilis
     student_profile = []
     for qid in range(1, 18):
         score = float(answers.get(str(qid), 3))
         student_profile.append((score - 1) / 4)
 
-    # 3. NLP analizė (4 atviri klausimai)
     q18 = answers.get("18", "")
     q19 = answers.get("19", "")
     q20 = answers.get("20", "")
     q21 = answers.get("21", "")
     nlp_scores = analyze_open_answers(q18, q19, q20, q21)
 
-    # 4. NLP integravimas (20%)
     NLP_WEIGHT = 0.2
     if nlp_scores:
         for competency, indices in NLP_COMPETENCY_MAP.items():
@@ -570,21 +516,18 @@ def recommend():
                     nlp_val * NLP_WEIGHT
                 )
 
-    # 5. Kosinusinis panašumas
     program_names = list(programs.keys())
     program_matrix = np.array(list(programs.values()))
     program_matrix_norm = program_matrix / 3.0
     scores = cosine_similarity([student_profile], program_matrix_norm)[0]
 
-    # 6. TOP 3
     ranked = sorted(zip(program_names, scores), key=lambda x: x[1], reverse=True)
     top3 = [
         {"program": name, "score": round(float(score) * 100, 1)}
         for name, score in ranked[:3]
     ]
 
-    # 7. Išsaugoti į DB
-    sesijos_id = str(uuid.uuid4())[:8]  # trumpas unikalus ID
+    sesijos_id = str(uuid.uuid4())[:8]
     issaugoti_sesija(sesijos_id, answers, top3, nlp_scores)
 
     return jsonify({
@@ -596,7 +539,6 @@ def recommend():
 
 @app.route('/api/statistika', methods=['GET'])
 def statistika():
-    """http://localhost:5001/api/statistika"""
     try:
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -629,6 +571,55 @@ def statistika():
 
 
 # ════════════════════════════════════════
+# TEST
+# ════════════════════════════════════════
+
+@app.route('/admin/fix-questions')
+def fix_questions():
+    """
+    LAIKINAS endpoint klausimų tekstams atnaujinti duomenų bazėje.
+    Paleisti vieną kartą naršyklėje, tada IŠTRINTI šį bloką.
+    """
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+
+        klausimai = [
+            (1,  "Lengvai atpažįstu savo emocijas kasdienėse situacijose."),
+            (2,  "Sugebu suvaldyti pyktį ar nerimą stresinėse situacijose."),
+            (3,  "Man nesunku prisitaikyti prie netikėtų pokyčių."),
+            (4,  "Siekiu tobulėti ir kelti sau aukštus standartus."),
+            (5,  "Dažniausiai situacijas vertinu teigiamai."),
+            (6,  "Gerai suprantu kitų žmonių jausmus ir perspektyvą."),
+            (7,  "Jaučiu grupės dinamiką ir neformalius santykius komandoje."),
+            (8,  "Man sekasi įtikinti kitus ir gauti jų palaikymą."),
+            (9,  "Mėgstu padėti kitiems mokytis ir tobulėti."),
+            (10, "Sugebu rasti kompromisą konfliktinėse situacijose."),
+            (11, "Efektyviai dirbu komandoje siekdamas bendro tikslo."),
+            (12, "Man patinka eksperimentuoti su naujomis idėjomis."),
+            (13, "Esu organizuotas ir kruopštus savo darbe."),
+            (14, "Mėgstu bendrauti ir esu energingas su žmonėmis."),
+            (15, "Man svarbu bendradarbiauti ir išlaikyti gerus santykius."),
+            (16, "Dažnai jaučiu nerimą ar stresą."),
+            (17, "Man patinka įkvėpti kitus ir rodyti pavyzdį siekiant bendro tikslo."),
+        ]
+
+        for eile, tekstas in klausimai:
+            cur.execute(
+                "UPDATE klausimas SET tekstas = %s WHERE eile = %s",
+                (tekstas, eile)
+            )
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        return "Klausimai atnaujinti! Dabar ištrink /admin/fix-questions iš kodo."
+
+    except Exception as e:
+        return f"Klaida: {e}", 500
+
+
+# ════════════════════════════════════════
 # PALEIDIMAS
 # ════════════════════════════════════════
 
@@ -638,5 +629,5 @@ if __name__ == '__main__':
     else:
         print("Groq NLP modulis aktyvus (llama-3.1-8b-instant)")
 
-    init_db()  # sukuria lenteles ir įkelia pradinius duomenis
+    init_db()
     app.run(debug=True, port=5001, host='0.0.0.0')
