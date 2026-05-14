@@ -228,10 +228,6 @@ def _seed_programos(cur, conn):
 
 
 def _seed_svoriai(cur, conn):
-    cur.execute("SELECT COUNT(*) FROM programos_kompetencija")
-    if cur.fetchone()[0] > 0:
-        return
-
     cur.execute("SELECT id, pavadinimas FROM programa")
     prog_map = {row[1]: row[0] for row in cur.fetchall()}
 
