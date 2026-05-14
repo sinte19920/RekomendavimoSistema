@@ -569,56 +569,6 @@ def statistika():
     except Exception as e:
         return jsonify({"klaida": str(e)}), 500
 
-
-# ════════════════════════════════════════
-# TEST
-# ════════════════════════════════════════
-
-@app.route('/admin/fix-questions')
-def fix_questions():
-    """
-    LAIKINAS endpoint klausimų tekstams atnaujinti duomenų bazėje.
-    Paleisti vieną kartą naršyklėje, tada IŠTRINTI šį bloką.
-    """
-    try:
-        conn = get_db()
-        cur = conn.cursor()
-
-        klausimai = [
-            (1,  "Lengvai atpažįstu savo emocijas kasdienėse situacijose."),
-            (2,  "Sugebu suvaldyti pyktį ar nerimą stresinėse situacijose."),
-            (3,  "Man nesunku prisitaikyti prie netikėtų pokyčių."),
-            (4,  "Siekiu tobulėti ir kelti sau aukštus standartus."),
-            (5,  "Dažniausiai situacijas vertinu teigiamai."),
-            (6,  "Gerai suprantu kitų žmonių jausmus ir perspektyvą."),
-            (7,  "Jaučiu grupės dinamiką ir neformalius santykius komandoje."),
-            (8,  "Man sekasi įtikinti kitus ir gauti jų palaikymą."),
-            (9,  "Mėgstu padėti kitiems mokytis ir tobulėti."),
-            (10, "Sugebu rasti kompromisą konfliktinėse situacijose."),
-            (11, "Efektyviai dirbu komandoje siekdamas bendro tikslo."),
-            (12, "Man patinka eksperimentuoti su naujomis idėjomis."),
-            (13, "Esu organizuotas ir kruopštus savo darbe."),
-            (14, "Mėgstu bendrauti ir esu energingas su žmonėmis."),
-            (15, "Man svarbu bendradarbiauti ir išlaikyti gerus santykius."),
-            (16, "Dažnai jaučiu nerimą ar stresą."),
-            (17, "Man patinka įkvėpti kitus ir rodyti pavyzdį siekiant bendro tikslo."),
-        ]
-
-        for eile, tekstas in klausimai:
-            cur.execute(
-                "UPDATE klausimas SET tekstas = %s WHERE eile = %s",
-                (tekstas, eile)
-            )
-
-        conn.commit()
-        cur.close()
-        conn.close()
-        return "Klausimai atnaujinti! Dabar ištrink /admin/fix-questions iš kodo."
-
-    except Exception as e:
-        return f"Klaida: {e}", 500
-
-
 # ════════════════════════════════════════
 # PALEIDIMAS
 # ════════════════════════════════════════
