@@ -576,9 +576,6 @@ def statistika():
 
 @app.route('/admin/fix-questions')
 def fix_questions():
-    """
-    Laikinas endpoint klausimų tekstams atnaujinti duomenų bazėje.
-    """
     try:
         conn = get_db()
         cur = conn.cursor()
@@ -587,7 +584,9 @@ def fix_questions():
             (19, "Papasakok apie situaciją, kai dirbai ar mokeisi kartu su kitais žmonėmis. Kas tau toje patirtyje patiko ar nepatiko?"),
         ]
 
-        for eile, tekstas in klausimai:
+        for item in klausimai:
+            eile = item[0]
+            tekstas = item[1]
             cur.execute(
                 "UPDATE klausimas SET tekstas = %s WHERE eile = %s",
                 (tekstas, eile)
