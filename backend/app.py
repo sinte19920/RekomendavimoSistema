@@ -192,7 +192,7 @@ def _seed_klausimai(cur, conn):
     klausimai = [
         (1,  "Lengvai atpažįstu savo emocijas kasdienėse situacijose.",             "scale", "Emocinė savimonė"),
         (2,  "Sugebu suvaldyti pyktį ar nerimą stresinėse situacijose.",            "scale", "Emocinė savikontrolė"),
-        (3,  "Nesunku man prisitaikyti prie netikėtų pokyčių.",                     "scale", "Adaptyvumas"),
+        (3,  "Man nesunku prisitaikyti prie netikėtų pokyčių.",                     "scale", "Adaptyvumas"),
         (4,  "Siekiu tobulėti ir kelti sau aukštus standartus.",                    "scale", "Orientacija į pasiekimus"),
         (5,  "Dažniausiai situacijas vertinu teigiamai.",                           "scale", "Pozityvus požiūris"),
         (6,  "Gerai suprantu kitų žmonių jausmus ir perspektyvą.",                  "scale", "Empatija"),
@@ -208,7 +208,7 @@ def _seed_klausimai(cur, conn):
         (16, "Dažnai jaučiu nerimą ar stresą.",                                    "scale", "Emocinis stabilumas"),
         (17, "Man patinka įkvėpti kitus ir rodyti pavyzdį siekiant bendro tikslo.", "scale", "Įkvepianti lyderystė"),
         (18, "Prisimink situaciją, kai susidūrei su sunkumu ar nesėkme (pvz. mokykloje, sporte, draugystėje). Kaip jauteisi ir ką padarei?", "open", None),
-        (19, "Papasakok apie situaciją, kai dirbai ar mokėisi kartu su kitais žmonėmis. Kas tau toje patirtyje patiko ar nepatiko?", "open", None),
+        (19, "Papasakok apie situaciją, kai dirbai ar mokeisi kartu su kitais žmonėmis. Kas tau toje patirtyje patiko ar nepatiko?", "open", None),
         (20, "Kas tau suteikia daugiausiai energijos — kai dirbi vienas ir giliniesi į temą, ar kai bendrauti ir veiki su žmonėmis? Kodėl?", "open", None),
         (21, "Ar esi kada nors padėjęs kitam žmogui išmokti ką nors naujo arba spręsti problemą? Kaip tai vyko ir kaip jauteisi?", "open", None),
     ]
