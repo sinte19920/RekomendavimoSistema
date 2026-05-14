@@ -145,19 +145,19 @@ def _seed_kompetencijos(cur, conn):
     ]
 
     for pav, kat, apr in kompetencijos:
-        cur.execute(
-            "INSERT INTO kompetencija (pavadinimas, kategorija, aprasymas) VALUES (%s, %s, %s)",
-            (pav, kat, apr)
-        )
+        cur.execute("""
+            INSERT INTO kompetencija (pavadinimas, kategorija, aprasymas)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (pavadinimas) DO UPDATE
+                SET kategorija = EXCLUDED.kategorija,
+                    aprasymas  = EXCLUDED.aprasymas
+        """, (pav, kat, apr))
+
     conn.commit()
-    print("[DB] Kompetencijos įkeltos.")
+    print("DB kompetencijos įkeltos/atnaujintos.")
 
 
 def _seed_klausimai(cur, conn):
-    cur.execute("SELECT COUNT(*) FROM klausimas")
-    if cur.fetchone()[0] > 0:
-        return
-
     cur.execute("SELECT id, pavadinimas FROM kompetencija")
     komp_map = {row[1]: row[0] for row in cur.fetchall()}
 
@@ -187,12 +187,15 @@ def _seed_klausimai(cur, conn):
 
     for eile, tekstas, tipas, komp_pav in klausimai:
         komp_id = komp_map.get(komp_pav) if komp_pav else None
-        cur.execute(
-            "INSERT INTO klausimas (eile, tekstas, tipas, kompetencija_id) VALUES (%s, %s, %s, %s)",
-            (eile, tekstas, tipas, komp_id)
-        )
+        cur.execute("""
+            INSERT INTO klausimas (eile, tekstas, tipas, kompetencija_id)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (eile) DO UPDATE
+                SET tekstas = EXCLUDED.tekstas
+        """, (eile, tekstas, tipas, komp_id))
+
     conn.commit()
-    print("[DB] Klausimai įkelti.")
+    print("DB klausimai įkelti/atnaujinti.")
 
 
 def _seed_programos(cur, conn):
@@ -212,12 +215,16 @@ def _seed_programos(cur, conn):
     ]
 
     for pav, kodas, apr in programos:
-        cur.execute(
-            "INSERT INTO programa (pavadinimas, kodas, aprasymas) VALUES (%s, %s, %s)",
-            (pav, kodas, apr)
-        )
+        cur.execute("""
+            INSERT INTO programa (pavadinimas, kodas, aprasymas)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (pavadinimas) DO UPDATE
+                SET kodas    = EXCLUDED.kodas,
+                    aprasymas = EXCLUDED.aprasymas
+        """, (pav, kodas, apr))
+
     conn.commit()
-    print("[DB] Programos įkeltos.")
+    print("DB programos įkeltos/atnaujintos.")
 
 
 def _seed_svoriai(cur, conn):
@@ -260,13 +267,16 @@ def _seed_svoriai(cur, conn):
             komp_id = komp_map.get(komp_pav)
             if not komp_id:
                 continue
-            cur.execute(
-                "INSERT INTO programos_kompetencija (programa_id, kompetencija_id, svoris) VALUES (%s, %s, %s)",
-                (prog_id, komp_id, svoris)
-            )
+            cur.execute("""
+                INSERT INTO programos_kompetencija
+                    (programa_id, kompetencija_id, svoris)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (programa_id, kompetencija_id) DO UPDATE
+                    SET svoris = EXCLUDED.svoris
+            """, (prog_id, komp_id, svoris))
 
     conn.commit()
-    print("[DB] Svorių matrica įkelta.")
+    print("DB svorių matrica įkelta/atnaujinta.")
 
 
 # ════════════════════════════════════════
@@ -568,38 +578,6 @@ def statistika():
 
     except Exception as e:
         return jsonify({"klaida": str(e)}), 500
-
-
-# ════════════════════════════════════════
-# TEST
-# ════════════════════════════════════════
-
-@app.route('/admin/fix-questions')
-def fix_questions():
-    try:
-        conn = get_db()
-        cur = conn.cursor()
-
-        klausimai = [
-            (19, "Papasakok apie situaciją, kai dirbai ar mokeisi kartu su kitais žmonėmis. Kas tau toje patirtyje patiko ar nepatiko?"),
-        ]
-
-        for item in klausimai:
-            eile = item[0]
-            tekstas = item[1]
-            cur.execute(
-                "UPDATE klausimas SET tekstas = %s WHERE eile = %s",
-                (tekstas, eile)
-            )
-
-        conn.commit()
-        cur.close()
-        conn.close()
-        return "Klausimai atnaujinti"
-
-    except Exception as e:
-        return f"Klaida: {e}", 500
-
 
 # ════════════════════════════════════════
 # PALEIDIMAS
