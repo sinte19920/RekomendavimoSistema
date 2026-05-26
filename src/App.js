@@ -144,14 +144,29 @@ function InfoModal({ modalKey, onClose }) {
    APP
 ══════════════════════════════════════ */
 function App() {
-  const [screen, setScreen] = useState('welcome');
-  const [results, setResults] = useState(null);
+  const [screen, setScreen] = useState(() => {
+    return sessionStorage.getItem('results') ? 'results' : 'welcome';
+  });
+  const [screen, setScreen] = useState(() => {
+    return sessionStorage.getItem('results') ? 'results' : 'welcome';
+  });
+  const [results, setResults] = useState(() => {
+    const saved = sessionStorage.getItem('results');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
 
   const handleResults = (data) => {
     setResults(data);
     setScreen('results');
+    sessionStorage.setItem('results', JSON.stringify(data));
+  };
+
+  const handleReset = () => {
+    sessionStorage.removeItem('results');
+    setScreen('welcome');
+    setResults(null);
   };
 
   const handleProgramClick = (program) => {
@@ -184,7 +199,7 @@ function App() {
         />
       )}
       {screen === 'quiz' && <Questionnaire onSubmit={handleResults} onBack={() => setScreen('welcome')} />}
-      {screen === 'results' && <Results data={results} onReset={() => setScreen('welcome')} onProgramClick={handleProgramClick} />}
+      {screen === 'results' && <Results data={results} onReset={handleReset} onProgramClick={handleProgramClick} />}
       {screen === 'program' && <ProgramDetail program={selectedProgram} onBack={() => setScreen('results')} />}
 
       {/* ─ MODAL ─ */}
