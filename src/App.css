@@ -146,30 +146,6 @@ body {
   overflow: hidden;
 }
 
-/* .welcome-hero::before {
-  content: '';
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 360px;
-  height: 360px;
-  border: 70px solid rgba(201, 168, 76, 0.1);
-  border-radius: 50%;
-  pointer-events: none;
-} */
-
-/* .welcome-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -40px;
-  left: 20%;
-  width: 200px;
-  height: 200px;
-  border: 40px solid rgba(255, 255, 255, 0.04);
-  border-radius: 50%;
-  pointer-events: none;
-} */
-
 .welcome-hero h1 {
   font-family: 'Lora', serif;
   font-size: 40px;
