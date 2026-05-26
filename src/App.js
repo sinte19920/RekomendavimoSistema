@@ -147,8 +147,9 @@ function App() {
   const [screen, setScreen] = useState(() => {
     return sessionStorage.getItem('results') ? 'results' : 'welcome';
   });
-  const [screen, setScreen] = useState(() => {
-    return sessionStorage.getItem('results') ? 'results' : 'welcome';
+  const [results, setResults] = useState(() => {
+    const saved = sessionStorage.getItem('results');
+    return saved ? JSON.parse(saved) : null;
   });
   const [results, setResults] = useState(() => {
     const saved = sessionStorage.getItem('results');
