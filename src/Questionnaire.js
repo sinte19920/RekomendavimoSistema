@@ -63,6 +63,10 @@ function Questionnaire({ onSubmit, onBack }) {
         }
     };
 
+    const canNavigateTo = (i, s) => {
+        return isSectionComplete(s, answers) || i <= currentSection || hasReachedEnd;
+    };
+
     const handleScale = (id, value) => {
         setAnswers(prev => {
             const updated = { ...prev, [id]: value };
@@ -135,10 +139,10 @@ function Questionnaire({ onSubmit, onBack }) {
                         <React.Fragment key={s.key}>
                             <div
                                 className={`progress-step ${isSectionComplete(s, answers) ? 'done' : i === currentSection ? 'active' : ''}`}
-                                onClick={() => { if (isSectionComplete(s, answers) || i <= currentSection || hasReachedEnd) goToSection(i); }}
-                                style={{ cursor: (isSectionComplete(s, answers) || i <= currentSection || hasReachedEnd) ? 'pointer' : 'default' }}
+                                onClick={() => { if (canNavigateTo(i, s)) goToSection(i); }}
+                                style={{ cursor: canNavigateTo(i, s) ? 'pointer' : 'default' }}
                             >
-                                <div className="progress-dot">{i < currentSection ? '✓' : i + 1}</div>
+                                <div className="progress-dot">{isSectionComplete(s, answers) ? '✓' : i + 1}</div>
                                 <span className="progress-step-label">{s.label}</span>
                             </div>
                             {i < SECTIONS.length - 1 && <div className="progress-line"></div>}
@@ -257,8 +261,8 @@ function Questionnaire({ onSubmit, onBack }) {
                             <div
                                 key={s.key}
                                 className={`domain-item ${isSectionComplete(s, answers) ? 'done' : i === currentSection ? 'active' : ''}`}
-                                onClick={() => { if (isSectionComplete(s, answers) || i <= currentSection) goToSection(i); }}
-                                style={{ cursor: (isSectionComplete(s, answers) || i <= currentSection) ? 'pointer' : 'default' }}
+                                onClick={() => { if (canNavigateTo(i, s)) goToSection(i); }}
+                                style={{ cursor: canNavigateTo(i, s) ? 'pointer' : 'default' }}
                             >
                                 <div className="domain-dot"></div>
                                 {s.label}
