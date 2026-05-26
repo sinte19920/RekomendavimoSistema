@@ -30,6 +30,9 @@ function Questionnaire({ onSubmit, onBack }) {
         const saved = sessionStorage.getItem('quizSection');
         return saved ? parseInt(saved) : 0;
     });
+    const [hasReachedEnd, setHasReachedEnd] = useState(() => {
+        return sessionStorage.getItem('quizReachedEnd') === 'true';
+    });
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -54,6 +57,10 @@ function Questionnaire({ onSubmit, onBack }) {
     const goToSection = (i) => {
         setCurrentSection(i);
         sessionStorage.setItem('quizSection', i);
+        if (i === SECTIONS.length - 1) {
+            setHasReachedEnd(true);
+            sessionStorage.setItem('quizReachedEnd', 'true');
+        }
     };
 
     const handleScale = (id, value) => {
@@ -83,6 +90,7 @@ function Questionnaire({ onSubmit, onBack }) {
             const data = await response.json();
             sessionStorage.removeItem('quizAnswers');
             sessionStorage.removeItem('quizSection');
+            sessionStorage.removeItem('quizReachedEnd');
             onSubmit(data);
         } catch {
             setError('Klaida siunčiant duomenis. Pabandykite dar kartą.');
@@ -127,8 +135,8 @@ function Questionnaire({ onSubmit, onBack }) {
                         <React.Fragment key={s.key}>
                             <div
                                 className={`progress-step ${isSectionComplete(s, answers) ? 'done' : i === currentSection ? 'active' : ''}`}
-                                onClick={() => { if (isSectionComplete(s, answers) || i <= currentSection) goToSection(i); }}
-                                style={{ cursor: (isSectionComplete(s, answers) || i <= currentSection) ? 'pointer' : 'default' }}
+                                onClick={() => { if (isSectionComplete(s, answers) || i <= currentSection || hasReachedEnd) goToSection(i); }}
+                                style={{ cursor: (isSectionComplete(s, answers) || i <= currentSection || hasReachedEnd) ? 'pointer' : 'default' }}
                             >
                                 <div className="progress-dot">{i < currentSection ? '✓' : i + 1}</div>
                                 <span className="progress-step-label">{s.label}</span>
@@ -204,6 +212,7 @@ function Questionnaire({ onSubmit, onBack }) {
                                 } else {
                                     sessionStorage.removeItem('quizAnswers');
                                     sessionStorage.removeItem('quizSection');
+                                    sessionStorage.removeItem('quizReachedEnd');
                                     onBack();
                                 }
                             }}
