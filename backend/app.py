@@ -181,7 +181,7 @@ def _seed_klausimai(cur, conn):
         (17, "Man patinka įkvėpti kitus ir rodyti pavyzdį siekiant bendro tikslo.",  "scale", "Įkvepianti lyderystė"),
         (18, "Prisimink situaciją, kai susidūrei su sunkumu ar nesėkme (pvz. mokykloje, sporte, draugystėje). Kaip jauteisi ir ką padarei?", "open", None),
         (19, "Papasakok apie situaciją, kai dirbai ar mokeisi kartu su kitais žmonėmis. Kas tau toje patirtyje patiko ar nepatiko?",        "open", None),
-        (20, "Kas tau suteikia daugiausiai energijos — kai dirbi vienas ir giliniesi į temą, ar kai bendrauti ir veiki su žmonėmis? Kodėl?", "open", None),
+        (20, "Kas tau suteikia daugiausiai energijos — kai dirbi vienas ir giliniesi į temą, ar kai bendrauji ir veiki su žmonėmis? Kodėl?", "open", None),
         (21, "Ar esi kada nors padėjęs kitam žmogui išmokti ką nors naujo arba spręsti problemą? Kaip tai vyko ir kaip jauteisi?",          "open", None),
     ]
 
