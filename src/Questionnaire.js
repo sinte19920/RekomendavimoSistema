@@ -13,10 +13,16 @@ const SECTIONS = [
 
 function Questionnaire({ onSubmit, onBack }) {
     const [questions, setQuestions] = useState([]);
-    const [answers, setAnswers] = useState({});
+    const [answers, setAnswers] = useState(() => {
+        const saved = sessionStorage.getItem('quizAnswers');
+        return saved ? JSON.parse(saved) : {};
+    });
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [currentSection, setCurrentSection] = useState(0);
+    const [currentSection, setCurrentSection] = useState(() => {
+        const saved = sessionStorage.getItem('quizSection');
+        return saved ? parseInt(saved) : 0;
+    });
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -24,9 +30,12 @@ function Questionnaire({ onSubmit, onBack }) {
             .then(r => r.json())
             .then(data => {
                 setQuestions(data);
-                const defaults = {};
-                data.forEach(q => { if (q.type === 'scale') defaults[q.id] = null; });
-                setAnswers(defaults);
+                const saved = sessionStorage.getItem('quizAnswers');
+                if (!saved) {
+                    const defaults = {};
+                    data.forEach(q => { if (q.type === 'scale') defaults[q.id] = null; });
+                    setAnswers(defaults);
+                }
                 setLoading(false);
             })
             .catch(() => {
@@ -35,12 +44,25 @@ function Questionnaire({ onSubmit, onBack }) {
             });
     }, []);
 
+    const goToSection = (i) => {
+        setCurrentSection(i);
+        sessionStorage.setItem('quizSection', i);
+    };
+
     const handleScale = (id, value) => {
-        setAnswers(prev => ({ ...prev, [id]: value }));
+        setAnswers(prev => {
+            const updated = { ...prev, [id]: value };
+            sessionStorage.setItem('quizAnswers', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const handleOpen = (id, value) => {
-        setAnswers(prev => ({ ...prev, [id]: value }));
+        setAnswers(prev => {
+            const updated = { ...prev, [id]: value };
+            sessionStorage.setItem('quizAnswers', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const handleSubmit = async () => {
@@ -52,6 +74,8 @@ function Questionnaire({ onSubmit, onBack }) {
                 body: JSON.stringify({ answers })
             });
             const data = await response.json();
+            sessionStorage.removeItem('quizAnswers');
+            sessionStorage.removeItem('quizSection');
             onSubmit(data);
         } catch {
             setError('Klaida siunčiant duomenis. Pabandykite dar kartą.');
@@ -96,7 +120,7 @@ function Questionnaire({ onSubmit, onBack }) {
                         <React.Fragment key={s.key}>
                             <div
                                 className={`progress-step ${i < currentSection ? 'done' : i === currentSection ? 'active' : ''}`}
-                                onClick={() => i <= currentSection && setCurrentSection(i)}
+                                onClick={() => { if (i <= currentSection) goToSection(i); }}
                                 style={{ cursor: i <= currentSection ? 'pointer' : 'default' }}
                             >
                                 <div className="progress-dot">{i < currentSection ? '✓' : i + 1}</div>
@@ -167,12 +191,20 @@ function Questionnaire({ onSubmit, onBack }) {
                     <div className="quiz-nav-bottom">
                         <button
                             className="btn-nav-back"
-                            onClick={() => currentSection > 0 ? setCurrentSection(s => s - 1) : onBack()}
+                            onClick={() => {
+                                if (currentSection > 0) {
+                                    goToSection(currentSection - 1);
+                                } else {
+                                    sessionStorage.removeItem('quizAnswers');
+                                    sessionStorage.removeItem('quizSection');
+                                    onBack();
+                                }
+                            }}
                         >
                             ← Atgal
                         </button>
                         {canGoNext && (
-                            <button className="btn-nav-next" onClick={() => setCurrentSection(s => s + 1)}>
+                            <button className="btn-nav-next" onClick={() => goToSection(currentSection + 1)}>
                                 Toliau →
                             </button>
                         )}
@@ -209,7 +241,7 @@ function Questionnaire({ onSubmit, onBack }) {
                             <div
                                 key={s.key}
                                 className={`domain-item ${i < currentSection ? 'done' : i === currentSection ? 'active' : ''}`}
-                                onClick={() => i <= currentSection && setCurrentSection(i)}
+                                onClick={() => { if (i <= currentSection) goToSection(i); }}
                                 style={{ cursor: i <= currentSection ? 'pointer' : 'default' }}
                             >
                                 <div className="domain-dot"></div>

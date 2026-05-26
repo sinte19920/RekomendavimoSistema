@@ -145,9 +145,10 @@ function InfoModal({ modalKey, onClose }) {
 ══════════════════════════════════════ */
 function App() {
   const [screen, setScreen] = useState(() => {
-    return sessionStorage.getItem('results') ?
-      (sessionStorage.getItem('selectedProgram') ? 'program' : 'results')
-      : 'welcome';
+    if (sessionStorage.getItem('selectedProgram')) return 'program';
+    if (sessionStorage.getItem('results')) return 'results';
+    if (sessionStorage.getItem('quizAnswers')) return 'quiz';
+    return 'welcome';
   });
   const [results, setResults] = useState(() => {
     const saved = sessionStorage.getItem('results');
@@ -167,6 +168,8 @@ function App() {
   const handleReset = () => {
     sessionStorage.removeItem('results');
     sessionStorage.removeItem('selectedProgram');
+    sessionStorage.removeItem('quizAnswers');
+    sessionStorage.removeItem('quizSection');
     setScreen('welcome');
     setResults(null);
     setSelectedProgram(null);
