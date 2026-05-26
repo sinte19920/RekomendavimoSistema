@@ -11,6 +11,13 @@ const SECTIONS = [
     { key: 'atviri', label: 'Atviri klausimai', ids: [18, 19, 20, 21] },
 ];
 
+const isSectionComplete = (section, answers) => {
+    return section.ids.every(id => {
+        const val = answers[id];
+        return val !== null && val !== undefined && val !== '';
+    });
+};
+
 function Questionnaire({ onSubmit, onBack }) {
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState(() => {
@@ -119,9 +126,9 @@ function Questionnaire({ onSubmit, onBack }) {
                     {SECTIONS.map((s, i) => (
                         <React.Fragment key={s.key}>
                             <div
-                                className={`progress-step ${i < currentSection ? 'done' : i === currentSection ? 'active' : ''}`}
-                                onClick={() => { if (i <= currentSection) goToSection(i); }}
-                                style={{ cursor: i <= currentSection ? 'pointer' : 'default' }}
+                                className={`progress-step ${isSectionComplete(s, answers) ? 'done' : i === currentSection ? 'active' : ''}`}
+                                onClick={() => { if (isSectionComplete(s, answers) || i <= currentSection) goToSection(i); }}
+                                style={{ cursor: (isSectionComplete(s, answers) || i <= currentSection) ? 'pointer' : 'default' }}
                             >
                                 <div className="progress-dot">{i < currentSection ? '✓' : i + 1}</div>
                                 <span className="progress-step-label">{s.label}</span>
@@ -240,9 +247,9 @@ function Questionnaire({ onSubmit, onBack }) {
                         {SECTIONS.map((s, i) => (
                             <div
                                 key={s.key}
-                                className={`domain-item ${i < currentSection ? 'done' : i === currentSection ? 'active' : ''}`}
-                                onClick={() => { if (i <= currentSection) goToSection(i); }}
-                                style={{ cursor: i <= currentSection ? 'pointer' : 'default' }}
+                                className={`domain-item ${isSectionComplete(s, answers) ? 'done' : i === currentSection ? 'active' : ''}`}
+                                onClick={() => { if (isSectionComplete(s, answers) || i <= currentSection) goToSection(i); }}
+                                style={{ cursor: (isSectionComplete(s, answers) || i <= currentSection) ? 'pointer' : 'default' }}
                             >
                                 <div className="domain-dot"></div>
                                 {s.label}
