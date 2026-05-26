@@ -186,7 +186,12 @@ function App() {
 
       {/* ─ HEADER ─ */}
       <header className="site-header">
-        <div className="logo-area" onClick={() => setScreen('welcome')}>
+        <div className="logo-area" onClick={() => {
+          sessionStorage.removeItem('quizAnswers');
+          sessionStorage.removeItem('quizSection');
+          sessionStorage.removeItem('quizReachedEnd');
+          setScreen('welcome');
+        }}>
           <img src={VU_LOGO} alt="Vilniaus universitetas" className="header-vu-logo" />
           <div className="header-divider" />
           <img src={MIF_LOGO} alt="MIF" className="header-mif-logo" />
