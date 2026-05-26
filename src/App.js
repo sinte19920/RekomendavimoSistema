@@ -13,7 +13,7 @@ const MIF_LOGO = process.env.PUBLIC_URL + '/mif_logo.png';
 const MODAL_CONTENT = {
   ei: {
     title: 'Golemano emocinės kompetencijos modelis',
-    source: 'Goleman & Boyatzis (2017). Emotional Self-Awareness. Harvard Business Review; Goleman (1998). Working with Emotional Intelligence.',
+    source: 'Goleman, D., & Boyatzis, R. E. (2017). Emotional Intelligence Has 12 Elements. Which Do You Need to Work On? Harvard Business Review; Goleman, D. (1998). Working with emotional intelligence. Bantam Books.',
     body: (
       <div className="modal-body-ei">
         <div className="modal-domain">
@@ -89,7 +89,7 @@ const MODAL_CONTENT = {
   },
   b5: {
     title: 'Big Five asmenybės bruožai',
-    source: 'Vedel (2016). Big Five personality group differences across academic majors. Personality and Individual Differences; McCrae & Costa (1987). Validation of the Five-Factor Model of Personality.',
+    source: 'Vedel, A. (2016). Big Five personality group differences across academic majors: A systematic review. Personality and Individual Differences, 92, 1–10.; McCrae, R. R., & Costa, P. T. (1987). Validation of the five-factor model of personality across instruments and observers. Journal of Personality and Social Psychology, 52(1), 81–90.',
     body: (
       <div className="modal-body-b5">
         <div className="modal-trait">
