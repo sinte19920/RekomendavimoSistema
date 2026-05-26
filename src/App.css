@@ -1172,7 +1172,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   color: var(--text);
-  min-width: 200px;
+  min-width: 280px;
 }
 
 .all-result-bar-wrap {
