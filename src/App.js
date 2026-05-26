@@ -151,10 +151,6 @@ function App() {
     const saved = sessionStorage.getItem('results');
     return saved ? JSON.parse(saved) : null;
   });
-  const [results, setResults] = useState(() => {
-    const saved = sessionStorage.getItem('results');
-    return saved ? JSON.parse(saved) : null;
-  });
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
 
