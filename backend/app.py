@@ -204,14 +204,14 @@ def _seed_programos(cur, conn):
         return
 
     programos = [
-        ("Bioinformatika",                  "6121BX001", "Apjungia biologiją ir informatikos metodus."),
-        ("Duomenų mokslas",                 "6121BX002", "Statistika, mašininis mokymasis ir programavimas."),
-        ("Finansų ir draudimo matematika",  "6121BX003", "Matematika ir finansų teorija."),
-        ("Informacinių sistemų inžinerija", "6121BX004", "Didelių informacinių sistemų kūrimas ir valdymas."),
-        ("Informatika",                     "6121BX005", "Teorinė ir praktinė informatika."),
-        ("Matematika ir taikymai",          "6121BX006", "Klasikinė matematika ir abstraktus mąstymas."),
-        ("Programų sistemos",               "6121BX007", "Programinės įrangos kūrimas ir testavimas."),
-        ("Verslo duomenų analitika",        "6121BX008", "Matematika, IT ir verslo žinios."),
+        ("Bioinformatika",                     "6121BX001", "Apjungia biologiją ir informatikos metodus."),
+        ("Duomenų mokslas",                    "6121BX002", "Statistika, mašininis mokymasis ir programavimas."),
+        ("Finansų ir draudimo matematika",     "6121BX003", "Matematika ir finansų teorija."),
+        ("Informacinių sistemų inžinerija",    "6121BX004", "Didelių informacinių sistemų kūrimas ir valdymas."),
+        ("Informatika",                        "6121BX005", "Teorinė ir praktinė informatika."),
+        ("Matematika ir matematikos taikymai", "6121BX006", "Klasikinė matematika ir abstraktus mąstymas."),
+        ("Programų sistemos",                  "6121BX007", "Programinės įrangos kūrimas ir testavimas."),
+        ("Verslo duomenų analitika",           "6121BX008", "Matematika, IT ir verslo žinios."),
     ]
 
     for pav, kodas, apr in programos:
@@ -244,14 +244,14 @@ def _seed_svoriai(cur, conn):
     ]
 
     svoriai = {
-        "Bioinformatika":                  [2.33, 2.00, 2.33, 3.00, 2.67, 2.33, 2.00, 2.00, 2.00, 2.00, 2.67, 2.33, 2.67, 3.00, 1.67, 2.33, 2.33],
-        "Duomenų mokslas":                 [2.00, 3.00, 2.67, 2.67, 2.67, 2.00, 2.33, 2.00, 1.67, 2.33, 3.00, 2.33, 2.33, 2.67, 1.67, 1.33, 2.00],
-        "Finansų ir draudimo matematika":  [2.00, 2.00, 2.00, 2.00, 2.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 2.00, 3.00, 2.00, 2.00, 2.00],
-        "Informacinių sistemų inžinerija": [3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 2.00, 3.00, 3.00],
-        "Informatika":                     [1.00, 1.00, 3.00, 0.00, 2.00, 1.00, 2.00, 0.00, 1.00, 2.00, 3.00, 2.00, 2.00, 2.00, 0.00, 2.00, 3.00],
-        "Matematika ir taikymai":          [2.00, 1.00, 2.00, 3.00, 3.00, 1.00, 2.00, 2.00, 3.00, 2.00, 1.00, 1.00, 2.00, 3.00, 2.00, 2.00, 2.00],
-        "Programų sistemos":               [2.00, 2.00, 2.00, 3.00, 3.00, 2.00, 2.00, 3.00, 2.00, 3.00, 3.00, 2.00, 3.00, 3.00, 2.00, 2.00, 2.00],
-        "Verslo duomenų analitika":        [3.00, 2.00, 1.00, 3.00, 3.00, 3.00, 3.00, 3.00, 2.00, 2.00, 3.00, 2.00, 2.00, 3.00, 2.00, 1.00, 2.00],
+        "Bioinformatika":                              [2.33, 2.00, 2.33, 3.00, 2.67, 2.33, 2.00, 2.00, 2.00, 2.00, 2.67, 2.33, 2.67, 3.00, 1.67, 2.33, 2.33],
+        "Duomenų mokslas":                             [2.00, 3.00, 2.67, 2.67, 2.67, 2.00, 2.33, 2.00, 1.67, 2.33, 3.00, 2.33, 2.33, 2.67, 1.67, 1.33, 2.00],
+        "Finansų ir draudimo matematika":              [2.00, 2.00, 2.00, 2.00, 2.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 2.00, 3.00, 2.00, 2.00, 2.00],
+        "Informacinių sistemų inžinerija":             [3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 3.00, 2.00, 3.00, 3.00],
+        "Informatika":                                 [1.00, 1.00, 3.00, 0.00, 2.00, 1.00, 2.00, 0.00, 1.00, 2.00, 3.00, 2.00, 2.00, 2.00, 0.00, 2.00, 3.00],
+        "Matematika ir matematikos taikymai":          [2.00, 1.00, 2.00, 3.00, 3.00, 1.00, 2.00, 2.00, 3.00, 2.00, 1.00, 1.00, 2.00, 3.00, 2.00, 2.00, 2.00],
+        "Programų sistemos":                           [2.00, 2.00, 2.00, 3.00, 3.00, 2.00, 2.00, 3.00, 2.00, 3.00, 3.00, 2.00, 3.00, 3.00, 2.00, 2.00, 2.00],
+        "Verslo duomenų analitika":                    [3.00, 2.00, 1.00, 3.00, 3.00, 3.00, 3.00, 3.00, 2.00, 2.00, 3.00, 2.00, 2.00, 3.00, 2.00, 1.00, 2.00],
     }
 
     for prog_pav, svoriu_sarasas in svoriai.items():
@@ -474,7 +474,7 @@ Atsakyk TIK JSON formatu, be jokio papildomo teksto:
         return validated
 
     except Exception as e:
-        print(f"[NLP] ⚠ Klaida: {e}")
+        print(f"[NLP] Klaida: {e}")
         return {}
 
 

@@ -6,14 +6,14 @@ const PROGRAM_INFO = {
         description: 'Programa skirta studentams, kuriems patinka skaičiai, modeliai ir realių problemų sprendimas duomenų pagalba. Studijuosi statistiką, mašininį mokymąsi ir programavimą.',
         careers: ['Duomenų analitikai', 'Dirbtinio intelekto sprendimų kūrėjai', 'Prognozavimo ir modeliavimo specialistai', 'Duomenų inžinieriai'],
         topCompetencies: ['Sąmoningumas', 'Orientacija į pasiekimus', 'Atvirumas patirčiai', 'Komandinis darbas'],
-        image: '/karjeros/DuomenuMokslas.png',
+        image: null, //'/karjeros/DuomenuMokslas.png'
     },
     'Finansų ir draudimo matematika': {
         field: 'Matematikos mokslai',
         description: 'Programa apjungia matematiką ir finansų teoriją. Tinkama tiems, kurie mėgsta skaičiavimus, riziką ir ekonominius modelius.',
         careers: ['Aktuarai', 'Produktų specialistai', 'Duomenų analizės specialistai', 'Inovacijų kūrėjai'],
         topCompetencies: ['Sąmoningumas', 'Orientacija į pasiekimus', 'Emocinė savikontrolė'],
-        image: '/karjeros/FinansuIrDraudimoMatematika.png',
+        image: null,
     },
     'Matematika ir matematikos taikymai': {
         field: 'Matematikos mokslai',

@@ -30,7 +30,7 @@ function Questionnaire({ onSubmit, onBack }) {
                 setLoading(false);
             })
             .catch(() => {
-                setError('Nepavyko prisijungti prie serverio. Patikrinti ar backend veikia (python app.py).');
+                setError('Nepavyko prisijungti prie serverio. Patikrinti ar backend veikia (app.py).');
                 setLoading(false);
             });
     }, []);
