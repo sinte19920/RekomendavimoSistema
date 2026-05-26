@@ -146,7 +146,7 @@ body {
   overflow: hidden;
 }
 
-.welcome-hero::before {
+/* .welcome-hero::before {
   content: '';
   position: absolute;
   top: -80px;
@@ -156,9 +156,9 @@ body {
   border: 70px solid rgba(201, 168, 76, 0.1);
   border-radius: 50%;
   pointer-events: none;
-}
+} */
 
-.welcome-hero::after {
+/* .welcome-hero::after {
   content: '';
   position: absolute;
   bottom: -40px;
@@ -168,7 +168,7 @@ body {
   border: 40px solid rgba(255, 255, 255, 0.04);
   border-radius: 50%;
   pointer-events: none;
-}
+} */
 
 .welcome-hero h1 {
   font-family: 'Lora', serif;
